@@ -1,3 +1,9 @@
+### To install
+```
+python3.10 -m venv venv
+pip install -U pip setuptools wheel
+```
+
 # GNN-GCP
 Graph Neural Network architecture to solve the decision version of the graph coloring problem (GCP) (i.e. "is it possible
 to colour the given graph with C colours?"). Both training and testing procedures are ran on the verge of satisfiability, that is,
