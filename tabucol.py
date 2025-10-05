@@ -4,6 +4,8 @@ from instance_loader import InstanceLoader
 
 import matplotlib.pyplot as plt
 import networkx as nx
+from networkx.convert_matrix import from_numpy_array
+
 
 def tabucol(graph, number_of_colors, tabu_size=7, reps=100, max_iterations=10000, debug=False):
     # graph is assumed to be the adjacency matrix of an undirected graph with no self-loops
@@ -128,7 +130,7 @@ def load_testcase(file):
                 
 def test(graph, k, draw=False):
     coloring = tabucol(graph, k, debug=False)
-    nx_graph = nx.from_numpy_matrix(graph)
+    nx_graph = from_numpy_array(graph)
     if draw:
         values = [coloring[node] for node in nx_graph]
         nx.draw(nx_graph, node_color=values, pos=nx.shell_layout(nx_graph))

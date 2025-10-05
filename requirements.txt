@@ -1,8 +1,7 @@
-setuptools
-wheel
 numpy
 tensorflow
 matplotlib
-networkx
-grinpy
+networkx<3
+grinpy==19.7a0
 pycosat
+ortools
