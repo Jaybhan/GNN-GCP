@@ -13,26 +13,50 @@ class InstanceLoader(object):
     #end
 
     def get_instances(self, n_instances):
+        print("DEBUG: get_instances called for {} instances, current index={}".format(n_instances, self.index))
         instances_generated = 0
 
         while instances_generated < n_instances:
-            # Read graph from file
-            Ma, chrom_number, diff_edge = read_graph(self.filenames[self.index])
-            f = self.filenames[self.index]
+            print("DEBUG: instances_generated={}, reading file index={}".format(instances_generated, self.index))
+
+            if self.index >= len(self.filenames):
+                print("DEBUG: ERROR - index {} >= len(filenames) {}".format(self.index, len(self.filenames)))
+                break
+
+            print("DEBUG: Reading file: {}".format(self.filenames[self.index]))
+
+            try:
+                # Read graph from file
+                Ma, chrom_number, diff_edge = read_graph(self.filenames[self.index])
+                f = self.filenames[self.index]
+                print("DEBUG: Successfully read file, chrom_number={}".format(chrom_number))
+            except Exception as e:
+                print("DEBUG: ERROR reading file {}: {}".format(self.filenames[self.index], e))
+                # Skip this file and move to next
+                if self.index + 1 < len(self.filenames):
+                    self.index += 1
+                else:
+                    self.reset()
+                continue
 
             # Generate multiple color count examples for this graph
             # Try colors from 2 to chrom_number + 3
+            print("DEBUG: Generating color examples from 2 to {}".format(chrom_number + 3))
             for colors in range(2, chrom_number + 4):
                 if instances_generated >= n_instances:
+                    print("DEBUG: Reached target instances, breaking")
                     break
 
                 cn_exists_val = 1 if colors >= chrom_number else 0
+                print("DEBUG: Yielding instance {} with colors={}, cn_exists={}".format(instances_generated, colors, cn_exists_val))
                 yield Ma, colors, f, cn_exists_val
                 instances_generated += 1
 
+            print("DEBUG: Moving to next file, current index={}".format(self.index))
             if self.index + 1 < len(self.filenames):
                 self.index += 1
             else:
+                print("DEBUG: Reached end of files, resetting")
                 self.reset()
         #end
     #end
