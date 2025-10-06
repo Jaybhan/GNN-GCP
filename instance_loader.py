@@ -38,43 +38,70 @@ class InstanceLoader(object):
     #end
 
     def create_batch(instances):
+        print("DEBUG: create_batch called with {} instances".format(len(instances)))
 
         # n_instances: number of instances
         n_instances = len(instances)
+        print("DEBUG: n_instances = {}".format(n_instances))
 
         # n_vertices[i]: number of vertices in the i-th instance
         n_vertices  = np.array([ x[0].shape[0] for x in instances ])
+        print("DEBUG: n_vertices = {}".format(n_vertices))
+
         # n_edges[i]: number of edges in the i-th instance
         n_edges     = np.array([ len(np.nonzero(x[0])[0]) for x in instances ])
+        print("DEBUG: n_edges = {}".format(n_edges))
+
         # n_colors[i]: number of colors in the i-th instance
         n_colors = np.array( [x[1] for x in instances])
+        print("DEBUG: n_colors = {}".format(n_colors))
+
         # cn_exists[i]: colorability target for the i-th instance
         cn_exists = np.array( [x[3] for x in instances])
+        print("DEBUG: cn_exists = {}".format(cn_exists))
+
         # total_vertices: total number of vertices among all instances
         total_vertices  = sum(n_vertices)
+        print("DEBUG: total_vertices = {}".format(total_vertices))
+
         # total_edges: total number of edges among all instances
         total_edges     = sum(n_edges)
+        print("DEBUG: total_edges = {}".format(total_edges))
+
         # total_colors: total number of colors among all instances
         total_colors = sum(n_colors)
+        print("DEBUG: total_colors = {}".format(total_colors))
 
+        print("DEBUG: Creating matrices M and MC...")
         # Compute matrices M, MC
         # M is the adjacency matrix
         M              = np.zeros((total_vertices,total_vertices))
+        print("DEBUG: Created M matrix with shape {}".format(M.shape))
+
         # MC is a matrix connecting each problem nodes to its colors candidates
         MC = np.zeros((total_vertices, total_colors))
+        print("DEBUG: Created MC matrix with shape {}".format(MC.shape))
 
+        print("DEBUG: Starting matrix population loop...")
         for (i,(Ma,colors,f,cn_exists_val)) in enumerate(instances):
+            print("DEBUG: Processing instance {} with shape {}".format(i, Ma.shape))
+
             # Get the number of vertices (n) and edges (m) in this graph
             n, m, c = n_vertices[i], n_edges[i], n_colors[i]
             # Get the number of vertices (n_acc) and edges (m_acc) up until the i-th graph
             n_acc = sum(n_vertices[0:i])
             m_acc = sum(n_edges[0:i])
             c_acc = sum(n_colors[0:i])
+
+            print("DEBUG: Instance {}: n={}, m={}, c={}, n_acc={}, c_acc={}".format(i, n, m, c, n_acc, c_acc))
+
             #Populate MC
             MC[n_acc:n_acc+n,c_acc:c_acc+c] = 1
+            print("DEBUG: Populated MC for instance {}".format(i))
 
             # Get the list of edges in this graph
             edges = list(zip(np.nonzero(Ma)[0], np.nonzero(Ma)[1]))
+            print("DEBUG: Instance {} has {} edges".format(i, len(edges)))
 
             # Populate M
             for e,(x,y) in enumerate(edges):
@@ -82,7 +109,10 @@ class InstanceLoader(object):
                   M[n_acc+x,n_acc+y] = M[n_acc+y,n_acc+x] = 1
                 #end if
             #end for
+            print("DEBUG: Populated M for instance {}".format(i))
         #end for
+
+        print("DEBUG: Matrix population complete, returning batch...")
         return M, n_colors, MC, cn_exists, n_vertices, n_edges, f
     #end
 
