@@ -249,7 +249,7 @@ if __name__ == '__main__':
                   summarize_epoch(epoch_i,train_stats['loss'],train_stats['acc'],train_stats['sat'],train_stats['pred'],train=True)
 
                   # Save weights
-                  savepath = ptrain+'/checkpoints/epoch={epoch}'.format(epoch=round(10*np.ceil((epoch_i+1)/10)))
+                  savepath = ptrain+'/checkpoints/epoch={epoch}'.format(epoch=round(1*np.ceil((epoch_i+1)/1)))
                   os.makedirs(savepath, exist_ok=True)
                   if save_checkpoints: save_weights(sess, savepath);
 
