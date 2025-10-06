@@ -22,7 +22,7 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
     ncolors = np.sum(C)
     #We define the colors embeddings outside, randomly. They are not learnt by the GNN (that can be improved)
     colors_initial_embeddings = np.random.rand(ncolors,d)
-    
+
     # Define feed dict
     feed_dict = {
         model['M']: M,
@@ -36,7 +36,7 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
     }
 
     outputs = [model['train_step'], model['loss'], model['acc'], model['predictions'], model['TP'], model['FP'], model['TN'], model['FN']]
-    
+
 
     # Run model
     loss, acc, predictions, TP, FP, TN, FN = sess.run(outputs, feed_dict = feed_dict)[-7:]
@@ -65,7 +65,7 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
 def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True):
 
     M, n_colors, VC, cn_exists, n_vertices, n_edges, f = batch
-    
+
     # Compute the number of problems
     n_problems = n_vertices.shape[0]
 
@@ -75,20 +75,20 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
       conn = m / n
       n_acc = sum(n_vertices[0:i])
       c_acc = sum(n_colors[0:i])
-      
-      
+
+
       #subset adjacency matrix
       M_t = M[n_acc:n_acc+n, n_acc:n_acc+n]
       c = c if i % 2 == 0 else c + 1
-      
+
       gnnpred = tabupred = 999
       for j in range(2, c + 5):
         n_colors_t = j
-        cn_exists_t = 1 if n_colors_t >= c else 0
+        cn_exists_t = 1 if n_colors_t <= c else 0
         VC_t = np.ones( (n,n_colors_t) )
         #Generate colors embeddings
         colors_initial_embeddings = np.random.rand(n_colors_t,d)
-        
+
         feed_dict = {
             model['M']: M_t,
             model['VC']: VC_t,
@@ -101,13 +101,13 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         }
 
         outputs = [model['loss'], model['acc'], model['predictions'], model['TP'], model['FP'], model['TN'], model['FN'] ]
-        
+
         # Run model - chromatic number or more
         init_time = timeit.default_timer()
         loss, acc, predictions, TP, FP, TN, FN = sess.run(outputs, feed_dict = feed_dict)[-7:]
         elapsed_gnn_time  = timeit.default_timer() - init_time
         gnnpred = n_colors_t if predictions > 0.5 and n_colors_t < gnnpred else gnnpred
-        
+
         # run tabucol
         if runtabu:
           init_time = timeit.default_timer()
@@ -126,7 +126,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         cn_exists = cn_exists_t,
         tstloss = loss,
         tstacc = acc,
-        gnnpred = gnnpred, 
+        gnnpred = gnnpred,
         prediction = predictions.item(),
         gnntime = elapsed_gnn_time,
         tabupred = tabupred if runtabu else 0,
@@ -152,7 +152,7 @@ def summarize_epoch(epoch_i, loss, acc, sat, pred, train=False):
 
 
 if __name__ == '__main__':
-    
+
     # Define argument parser
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('-d', default=64, type=int, help='Embedding size for vertices and edges')
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     test_params = {
         'batches_per_epoch': 1
     }
-    
+
     # Create train and test loaders
     if vars(args)['train']:
         train_loader = InstanceLoader(path)
@@ -217,7 +217,7 @@ if __name__ == '__main__':
 
         # Restore saved weights
         if load_checkpoints: load_weights(sess,loadpath);
-        
+
         if vars(args)['train']:
           ptrain = 'training_'+seed
           if not os.path.isdir(ptrain):
@@ -229,7 +229,7 @@ if __name__ == '__main__':
                   train_loader.reset()
 
                   train_stats = { k:np.zeros(train_params['batches_per_epoch']) for k in ['loss','acc','sat','pred','TP','FP','TN','FN'] }
-                  
+
 
                   print('Training model...', flush=True)
                   for (batch_i, batch) in islice(enumerate(train_loader.get_batches(batch_size)), train_params['batches_per_epoch']):
@@ -243,7 +243,7 @@ if __name__ == '__main__':
                   if save_checkpoints: save_weights(sess, savepath);
 
                   logfile.write('{epoch_i} {trloss} {tracc} {trsat} {trpred} {trTP} {trFP} {trTN} {trFN} \n'.format(
-                      
+
                       epoch_i = epoch_i,
 
                       trloss = np.mean(train_stats['loss']),
@@ -264,7 +264,7 @@ if __name__ == '__main__':
           if not os.path.isdir('testing_'+seed):
             os.makedirs('testing_'+seed)
           with open('testing_'+seed+'/log.dat','w') as logfile:
-             
+
             test_loader.reset()
             logfile.write('batch instance vertices edges connectivity loss acc sat chrom_number gnnpred gnncertainty gnntime tabupred tabutime\n')
             print('Testing model...', flush=True)
@@ -272,9 +272,6 @@ if __name__ == '__main__':
                 run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile,runtabu)
             #end
             logfile.flush()
-                  
+
     #end
 #end
-
-
-
