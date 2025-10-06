@@ -42,6 +42,12 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
     loss, acc, predictions, TP, FP, TN, FN = sess.run(outputs, feed_dict = feed_dict)[-7:]
 
     if verbose:
+        # Debug print to show actual labels vs predictions
+        print(f"DEBUG BATCH {batch_i}: True labels: {cn_exists}")
+        print(f"DEBUG BATCH {batch_i}: Raw predictions: {predictions}")
+        print(f"DEBUG BATCH {batch_i}: Rounded predictions: {np.round(predictions).astype(int)}")
+        print(f"DEBUG BATCH {batch_i}: Colors per instance: {C}")
+
         # Print stats
         print('{train_or_test} Epoch {epoch_i} Batch {batch_i}\t|\t(n,m,batch size)=({n},{m},{batch_size})\t|\t(Loss,Acc)=({loss:.4f},{acc:.4f})\t|\tAvg. (Sat,Prediction)=({avg_sat:.4f},{avg_pred:.4f})'.format(
             train_or_test = 'Train',
@@ -106,6 +112,10 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         init_time = timeit.default_timer()
         loss, acc, predictions, TP, FP, TN, FN = sess.run(outputs, feed_dict = feed_dict)[-7:]
         elapsed_gnn_time  = timeit.default_timer() - init_time
+
+        # Debug print for test predictions
+        print(f"DEBUG TEST: Instance {i}, chromatic_number={c}, testing_colors={n_colors_t}, true_label={cn_exists_t}, prediction={predictions[0]:.4f}, rounded={int(np.round(predictions[0]))}")
+
         gnnpred = n_colors_t if predictions > 0.5 and n_colors_t < gnnpred else gnnpred
 
         # run tabucol

@@ -37,7 +37,9 @@ class InstanceLoader(object):
                 if instances_generated >= n_instances:
                     break
 
-                cn_exists_val = 1 if colors >= chrom_number else 0
+                cn_exists_val = 1 if colors <= chrom_number else 0
+                # Debug print to verify correct labeling
+                print(f"DEBUG: Graph {f.split('/')[-1]}, chromatic_number={chrom_number}, colors={colors}, label={cn_exists_val} ({'colorable' if cn_exists_val == 1 else 'not_colorable'})")
                 yield Ma, colors, f, cn_exists_val
                 instances_generated += 1
 
