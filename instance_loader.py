@@ -25,13 +25,33 @@ class InstanceLoader(object):
 
             print("DEBUG: Reading file: {}".format(self.filenames[self.index]))
 
+            # Test if filename causes issues
+            filename = self.filenames[self.index]
+            print("DEBUG: Filename length: {}".format(len(filename)))
+            print("DEBUG: Filename repr: {}".format(repr(filename)))
+
+            # Test basic file operations
             try:
+                import os
+                print("DEBUG: File exists check: {}".format(os.path.exists(filename)))
+                print("DEBUG: File is file check: {}".format(os.path.isfile(filename)))
+                if os.path.exists(filename):
+                    print("DEBUG: File size: {} bytes".format(os.path.getsize(filename)))
+            except Exception as e:
+                print("DEBUG: Error in file system checks: {}".format(e))
+
+            try:
+                print("DEBUG: About to call read_graph...")
                 # Read graph from file
                 Ma, chrom_number, diff_edge = read_graph(self.filenames[self.index])
+                print("DEBUG: read_graph returned successfully")
                 f = self.filenames[self.index]
-                print("DEBUG: Successfully read file, chrom_number={}".format(chrom_number))
+                print("DEBUG: Successfully read file, chrom_number={}, Ma.shape={}".format(chrom_number, Ma.shape))
             except Exception as e:
                 print("DEBUG: ERROR reading file {}: {}".format(self.filenames[self.index], e))
+                import traceback
+                print("DEBUG: Full traceback:")
+                traceback.print_exc()
                 # Skip this file and move to next
                 if self.index + 1 < len(self.filenames):
                     self.index += 1
@@ -165,32 +185,83 @@ class InstanceLoader(object):
 #end
 
 def read_graph(filepath):
+    print("DEBUG: read_graph opening file: {}".format(filepath))
     with open(filepath,"r") as f:
+        print("DEBUG: File opened successfully")
 
         line = ''
 
         # Parse number of vertices
-        while 'DIMENSION' not in line: line = f.readline();
+        print("DEBUG: Looking for DIMENSION...")
+        line_count = 0
+        while 'DIMENSION' not in line:
+            line = f.readline()
+            line_count += 1
+            if line_count > 100:  # Safety check
+                raise Exception("Could not find DIMENSION in first 100 lines")
+            if not line:  # EOF
+                raise Exception("Reached EOF while looking for DIMENSION")
+
+        print("DEBUG: Found DIMENSION line: {}".format(line.strip()))
         n = int(line.split()[1])
+        print("DEBUG: n = {}".format(n))
         Ma = np.zeros((n,n),dtype=int)
 
         # Parse edges
-        while 'EDGE_DATA_SECTION' not in line: line = f.readline();
-        line = f.readline()
-        while '-1' not in line:
-            i,j = [ int(x) for x in line.split() ]
-            Ma[i,j] = 1
+        print("DEBUG: Looking for EDGE_DATA_SECTION...")
+        line_count = 0
+        while 'EDGE_DATA_SECTION' not in line:
             line = f.readline()
-        #end while
+            line_count += 1
+            if line_count > 100:
+                raise Exception("Could not find EDGE_DATA_SECTION in next 100 lines")
+            if not line:
+                raise Exception("Reached EOF while looking for EDGE_DATA_SECTION")
+
+        print("DEBUG: Found EDGE_DATA_SECTION, reading edges...")
+        line = f.readline()
+        edge_count = 0
+        while '-1' not in line:
+            if not line:
+                raise Exception("Reached EOF while reading edges")
+            try:
+                i,j = [ int(x) for x in line.split() ]
+                Ma[i,j] = 1
+                edge_count += 1
+            except:
+                print("DEBUG: Error parsing edge line: {}".format(line.strip()))
+                raise
+            line = f.readline()
+        print("DEBUG: Read {} edges".format(edge_count))
 
         # Parse diff edge
-        while 'DIFF_EDGE' not in line: line = f.readline();
+        print("DEBUG: Looking for DIFF_EDGE...")
+        line_count = 0
+        while 'DIFF_EDGE' not in line:
+            line = f.readline()
+            line_count += 1
+            if line_count > 100:
+                raise Exception("Could not find DIFF_EDGE in next 100 lines")
+            if not line:
+                raise Exception("Reached EOF while looking for DIFF_EDGE")
+
         diff_edge = [ int(x) for x in f.readline().split() ]
+        print("DEBUG: diff_edge = {}".format(diff_edge))
 
         # Parse target cost
-        while 'CHROM_NUMBER' not in line: line = f.readline();
-        chrom_number = int(f.readline().strip())
+        print("DEBUG: Looking for CHROM_NUMBER...")
+        line_count = 0
+        while 'CHROM_NUMBER' not in line:
+            line = f.readline()
+            line_count += 1
+            if line_count > 100:
+                raise Exception("Could not find CHROM_NUMBER in next 100 lines")
+            if not line:
+                raise Exception("Reached EOF while looking for CHROM_NUMBER")
 
-    #end
+        chrom_number = int(f.readline().strip())
+        print("DEBUG: chrom_number = {}".format(chrom_number))
+
+    print("DEBUG: read_graph completed successfully")
     return Ma,chrom_number,diff_edge
 #end
