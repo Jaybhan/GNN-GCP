@@ -43,10 +43,10 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
 
     if verbose:
         # Debug print to show actual labels vs predictions
-        print(f"DEBUG BATCH {batch_i}: True labels: {cn_exists}")
-        print(f"DEBUG BATCH {batch_i}: Raw predictions: {predictions}")
-        print(f"DEBUG BATCH {batch_i}: Rounded predictions: {np.round(predictions).astype(int)}")
-        print(f"DEBUG BATCH {batch_i}: Colors per instance: {C}")
+        print("DEBUG BATCH {}: True labels: {}".format(batch_i, cn_exists))
+        print("DEBUG BATCH {}: Raw predictions: {}".format(batch_i, predictions))
+        print("DEBUG BATCH {}: Rounded predictions: {}".format(batch_i, np.round(predictions).astype(int)))
+        print("DEBUG BATCH {}: Colors per instance: {}".format(batch_i, C))
 
         # Print stats
         print('{train_or_test} Epoch {epoch_i} Batch {batch_i}\t|\t(n,m,batch size)=({n},{m},{batch_size})\t|\t(Loss,Acc)=({loss:.4f},{acc:.4f})\t|\tAvg. (Sat,Prediction)=({avg_sat:.4f},{avg_pred:.4f})'.format(
@@ -114,7 +114,8 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         elapsed_gnn_time  = timeit.default_timer() - init_time
 
         # Debug print for test predictions
-        print(f"DEBUG TEST: Instance {i}, chromatic_number={c}, testing_colors={n_colors_t}, true_label={cn_exists_t}, prediction={predictions[0]:.4f}, rounded={int(np.round(predictions[0]))}")
+        print("DEBUG TEST: Instance {}, chromatic_number={}, testing_colors={}, true_label={}, prediction={:.4f}, rounded={}".format(
+            i, c, n_colors_t, cn_exists_t, predictions[0], int(np.round(predictions[0]))))
 
         gnnpred = n_colors_t if predictions > 0.5 and n_colors_t < gnnpred else gnnpred
 
