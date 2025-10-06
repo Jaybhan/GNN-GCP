@@ -87,8 +87,12 @@ class InstanceLoader(object):
     #end
 
     def get_batches(self, batch_size):
+        print(f"DEBUG: Total files: {len(self.filenames)}")
+        print(f"DEBUG: Expected batches: {len(self.filenames) // batch_size}")
         for i in range( len(self.filenames) // batch_size ):
+            print(f"DEBUG: Generating batch {i}")
             instances = list(self.get_instances(batch_size))
+            print(f"DEBUG: Instances: {instances}")
             yield InstanceLoader.create_batch(instances)
         #end
     #end
