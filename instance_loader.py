@@ -13,23 +13,22 @@ class InstanceLoader(object):
     #end
 
     def get_instances(self, n_instances):
-        for i in range(n_instances):
+        instances_generated = 0
+
+        while instances_generated < n_instances:
             # Read graph from file
-            Ma,chrom_number,diff_edge = read_graph(self.filenames[self.index])
+            Ma, chrom_number, diff_edge = read_graph(self.filenames[self.index])
             f = self.filenames[self.index]
-            
-            Ma1 = Ma
-            Ma2 = Ma.copy()
 
-            if diff_edge is not None:
-                # Create a (UNSAT/SAT) pair of instances with one edge of difference
-                # The second instance has one edge more (diff_edge) which renders it SAT
-                Ma2[diff_edge[0],diff_edge[1]] = Ma2[diff_edge[1],diff_edge[0]] =1
-            #end
+            # Generate multiple color count examples for this graph
+            # Try colors from 2 to chrom_number + 3
+            for colors in range(2, chrom_number + 4):
+                if instances_generated >= n_instances:
+                    break
 
-            # Yield both instances
-            yield Ma1,chrom_number,f
-            yield Ma2,chrom_number,f
+                cn_exists_val = 1 if colors >= chrom_number else 0
+                yield Ma, colors, f, cn_exists_val
+                instances_generated += 1
 
             if self.index + 1 < len(self.filenames):
                 self.index += 1
@@ -42,13 +41,15 @@ class InstanceLoader(object):
 
         # n_instances: number of instances
         n_instances = len(instances)
-        
+
         # n_vertices[i]: number of vertices in the i-th instance
         n_vertices  = np.array([ x[0].shape[0] for x in instances ])
         # n_edges[i]: number of edges in the i-th instance
         n_edges     = np.array([ len(np.nonzero(x[0])[0]) for x in instances ])
         # n_colors[i]: number of colors in the i-th instance
         n_colors = np.array( [x[1] for x in instances])
+        # cn_exists[i]: colorability target for the i-th instance
+        cn_exists = np.array( [x[3] for x in instances])
         # total_vertices: total number of vertices among all instances
         total_vertices  = sum(n_vertices)
         # total_edges: total number of edges among all instances
@@ -60,12 +61,9 @@ class InstanceLoader(object):
         # M is the adjacency matrix
         M              = np.zeros((total_vertices,total_vertices))
         # MC is a matrix connecting each problem nodes to its colors candidates
-        MC = np.zeros((total_vertices, total_colors))        
+        MC = np.zeros((total_vertices, total_colors))
 
-        # Even index instances are SAT, odd are UNSAT
-        cn_exists = np.array([ 1-(i%2) for i in range(n_instances) ])
-
-        for (i,(Ma,chrom_number,f)) in enumerate(instances):
+        for (i,(Ma,colors,f,cn_exists_val)) in enumerate(instances):
             # Get the number of vertices (n) and edges (m) in this graph
             n, m, c = n_vertices[i], n_edges[i], n_colors[i]
             # Get the number of vertices (n_acc) and edges (m_acc) up until the i-th graph
@@ -94,7 +92,7 @@ class InstanceLoader(object):
             yield InstanceLoader.create_batch(instances)
         #end
     #end
-    
+
     def get_test_batches(self, batch_size, total_instances):
         for i in range( total_instances ):
             instances = list(self.get_instances(batch_size))
@@ -117,7 +115,7 @@ def read_graph(filepath):
         while 'DIMENSION' not in line: line = f.readline();
         n = int(line.split()[1])
         Ma = np.zeros((n,n),dtype=int)
-        
+
         # Parse edges
         while 'EDGE_DATA_SECTION' not in line: line = f.readline();
         line = f.readline()
