@@ -68,7 +68,7 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
 #end
 
 
-def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True):
+def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True, global_instance_offset=0):
 
     M, n_colors, VC, cn_exists, n_vertices, n_edges, f = batch
 
@@ -115,7 +115,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
 
         # Debug print for test predictions
         print("DEBUG TEST: Instance {}, chromatic_number={}, testing_colors={}, true_label={}, prediction={:.4f}, rounded={}".format(
-            i, c, n_colors_t, cn_exists_t, predictions[0], int(np.round(predictions[0]))))
+            global_instance_offset + i, c, n_colors_t, cn_exists_t, predictions[0], int(np.round(predictions[0]))))
 
         gnnpred = n_colors_t if predictions > 0.5 and n_colors_t < gnnpred else gnnpred
 
@@ -129,7 +129,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
       #end for
       logfile.write('{batch_i} {i} {n} {m} {conn} {tstloss} {tstacc} {cn_exists} {c} {gnnpred} {prediction} {gnntime} {tabupred} {tabutime}\n'.format(
         batch_i = batch_i,
-        i = i,
+        i = global_instance_offset + i,
         n= n,
         m = m,
         c = c,
@@ -280,7 +280,7 @@ if __name__ == '__main__':
             logfile.write('batch instance vertices edges connectivity loss acc sat chrom_number gnnpred gnncertainty gnntime tabupred tabutime\n')
             print('Testing model v2...', flush=True)
             for (batch_i, batch) in enumerate(test_loader.get_test_batches(1,77)):
-                run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile,runtabu)
+                run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile, runtabu, global_instance_offset=batch_i)
             #end
             logfile.flush()
 
