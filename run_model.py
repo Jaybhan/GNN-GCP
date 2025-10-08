@@ -85,7 +85,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
 
       #subset adjacency matrix
       M_t = M[n_acc:n_acc+n, n_acc:n_acc+n]
-      c = c if i % 2 == 0 else c + 1
+      #c = c if i % 2 == 0 else c + 1
 
       gnnpred = tabupred = 999
       for j in range(2, c + 5):
@@ -278,8 +278,8 @@ if __name__ == '__main__':
 
             test_loader.reset()
             logfile.write('batch instance vertices edges connectivity loss acc sat chrom_number gnnpred gnncertainty gnntime tabupred tabutime\n')
-            print('Testing model...', flush=True)
-            for (batch_i, batch) in enumerate(test_loader.get_test_batches(1,2048)):
+            print('Testing model v2...', flush=True)
+            for (batch_i, batch) in enumerate(test_loader.get_test_batches(1,77)):
                 run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile,runtabu)
             #end
             logfile.flush()
