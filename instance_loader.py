@@ -94,6 +94,7 @@ class InstanceLoader(object):
                 #end if
             #end for
         #end for
+        print("batch", M, n_colors, MC, cn_exists, n_vertices, n_edges, f)
         return M, n_colors, MC, cn_exists, n_vertices, n_edges, f
     #end
 
