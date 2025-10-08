@@ -84,8 +84,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
 
 
       #subset adjacency matrix
-      #M_t = M[n_acc:n_acc+n, n_acc:n_acc+n]
-      M_t = M
+      M_t = M[n_acc:n_acc+n, n_acc:n_acc+n]
       #c = c if i % 2 == 0 else c + 1
 
       gnnpred = tabupred = 999
