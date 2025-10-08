@@ -69,7 +69,7 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
 
 
 def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True, global_instance_offset=0):
-
+    print("running test batch: ", batch)
     M, n_colors, VC, cn_exists, n_vertices, n_edges, f = batch
 
     # Compute the number of problems
@@ -78,13 +78,15 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
     #open up the batch, which contains 2 instances
     for i in range(n_problems):
       n, m, c = n_vertices[i], n_edges[i], n_colors[i]
+      print("num_colors: ", c)
       conn = m / n
       n_acc = sum(n_vertices[0:i])
       c_acc = sum(n_colors[0:i])
 
 
       #subset adjacency matrix
-      M_t = M[n_acc:n_acc+n, n_acc:n_acc+n]
+      #M_t = M[n_acc:n_acc+n, n_acc:n_acc+n]
+      M_t = M
       #c = c if i % 2 == 0 else c + 1
 
       gnnpred = tabupred = 999
@@ -280,7 +282,6 @@ if __name__ == '__main__':
             logfile.write('batch instance vertices edges connectivity loss acc sat chrom_number gnnpred gnncertainty gnntime tabupred tabutime\n')
             print('Testing model v2...', flush=True)
             for (batch_i, batch) in enumerate(test_loader.get_test_batches(1,3)):
-                print(batch)
 
                 run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile, runtabu, global_instance_offset=batch_i)
             #end
