@@ -68,7 +68,7 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
 #end
 
 
-def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True, acc=[]):
+def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True, acc_ls=[]):
     M, n_colors, VC, cn_exists, n_vertices, n_edges, f, chrom_number = batch
     # Compute the number of problems
     n_problems = n_vertices.shape[0]
@@ -113,7 +113,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         init_time = timeit.default_timer()
         loss, acc, predictions, TP, FP, TN, FN = sess.run(outputs, feed_dict = feed_dict)[-7:]
         elapsed_gnn_time  = timeit.default_timer() - init_time
-        acc.append(acc)
+        acc_ls.append(acc)
         # Debug print for test predictions
         print("DEBUG TEST: Instance {}, chromatic_number={}, testing_colors={}, true_label={}, prediction={:.4f}, rounded={}".format(
             i, c, n_colors_t, cn_exists_t, predictions[0], int(np.round(predictions[0]))))
@@ -280,12 +280,12 @@ if __name__ == '__main__':
             test_loader.reset()
             logfile.write('batch instance vertices edges connectivity loss acc sat chrom_number gnnpred gnncertainty gnntime tabupred tabutime\n')
             print('Testing model v2...', flush=True)
-            acc=[]
+            acc_ls=[]
             for (batch_i, batch) in enumerate(test_loader.get_test_batches(1,80)):
 
-                run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile, runtabu, acc)
+                run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile, runtabu, acc_ls)
             #end
-            print("The accuracy is: ", np.mean(acc))
+            print("The accuracy is: ", np.mean(acc_ls))
             logfile.flush()
 
     #end
