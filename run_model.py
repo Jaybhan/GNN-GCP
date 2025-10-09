@@ -70,7 +70,7 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
 
 def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True):
     M, n_colors, VC, cn_exists, n_vertices, n_edges, f = batch
-
+    ls=[]
     # Compute the number of problems
     n_problems = n_vertices.shape[0]
 
@@ -89,6 +89,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
       gnnpred = tabupred = 999
       for j in range(2, c + 5):
         n_colors_t = j
+        ls.append(n_colors_t)
         print("num_colors: ", n_colors_t)
         cn_exists_t = 1 if n_colors_t <= c else 0
         VC_t = np.ones( (n,n_colors_t) )
@@ -145,6 +146,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         )
       )
       logfile.flush()
+      print("ls: ", ls)
     #end for batch
 #end
 
