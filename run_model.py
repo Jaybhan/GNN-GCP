@@ -68,9 +68,8 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
 #end
 
 
-def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True):
+def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True, ls=[]):
     M, n_colors, VC, cn_exists, n_vertices, n_edges, f = batch
-    ls=[]
     # Compute the number of problems
     n_problems = n_vertices.shape[0]
 
@@ -146,7 +145,6 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         )
       )
       logfile.flush()
-      print("ls: ", ls)
     #end for batch
 #end
 
@@ -281,10 +279,12 @@ if __name__ == '__main__':
             test_loader.reset()
             logfile.write('batch instance vertices edges connectivity loss acc sat chrom_number gnnpred gnncertainty gnntime tabupred tabutime\n')
             print('Testing model v2...', flush=True)
+            ls=[]
             for (batch_i, batch) in enumerate(test_loader.get_test_batches(1,80)):
 
-                run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile, runtabu)
+                run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile, runtabu, ls)
             #end
+            print("ls: ", ls)
             logfile.flush()
 
     #end
