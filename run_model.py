@@ -69,13 +69,14 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
 
 
 def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=True, ls=[]):
-    M, n_colors, VC, cn_exists, n_vertices, n_edges, f = batch
+    M, n_colors, VC, cn_exists, n_vertices, n_edges, f, chrom_number = batch
     # Compute the number of problems
     n_problems = n_vertices.shape[0]
 
     #open up the batch, which contains 2 instances
     for i in range(n_problems):
       n, m, c = n_vertices[i], n_edges[i], n_colors[i]
+      c = chrom_number[i]
       conn = m / n
       n_acc = sum(n_vertices[0:i])
       c_acc = sum(n_colors[0:i])
@@ -89,7 +90,8 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
       for j in range(2, c + 5):
         n_colors_t = j
         ls.append(n_colors_t)
-        print("num_colors: ", n_colors_t)
+        #print("num_colors: ", n_colors_t)
+        print("chrom_number: ", c)
         cn_exists_t = 1 if n_colors_t <= c else 0
         VC_t = np.ones( (n,n_colors_t) )
         #Generate colors embeddings

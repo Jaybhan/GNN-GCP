@@ -38,7 +38,7 @@ class InstanceLoader(object):
                     break
 
                 cn_exists_val = 1 if colors <= chrom_number else 0
-                yield Ma, colors, f, cn_exists_val
+                yield Ma, colors, f, cn_exists_val, chrom_number
                 instances_generated += 1
 
             if self.index + 1 < len(self.filenames):
@@ -74,7 +74,7 @@ class InstanceLoader(object):
         # MC is a matrix connecting each problem nodes to its colors candidates
         MC = np.zeros((total_vertices, total_colors))
 
-        for (i,(Ma,colors,f,cn_exists_val)) in enumerate(instances):
+        for (i,(Ma,colors,f,cn_exists_val,chrom_number)) in enumerate(instances):
             # Get the number of vertices (n) and edges (m) in this graph
             n, m, c = n_vertices[i], n_edges[i], n_colors[i]
             # Get the number of vertices (n_acc) and edges (m_acc) up until the i-th graph
@@ -95,7 +95,7 @@ class InstanceLoader(object):
             #end for
         #end for
         print("batch", M, n_colors, MC, cn_exists, n_vertices, n_edges, f)
-        return M, n_colors, MC, cn_exists, n_vertices, n_edges, f
+        return M, n_colors, MC, cn_exists, n_vertices, n_edges, f, chrom_number
     #end
 
     def get_batches(self, batch_size):
