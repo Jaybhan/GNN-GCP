@@ -77,7 +77,6 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
     #open up the batch, which contains 2 instances
     for i in range(n_problems):
       n, m, c = n_vertices[i], n_edges[i], n_colors[i]
-      print("num_colors: ", c)
       conn = m / n
       n_acc = sum(n_vertices[0:i])
       c_acc = sum(n_colors[0:i])
@@ -90,6 +89,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
       gnnpred = tabupred = 999
       for j in range(2, c + 5):
         n_colors_t = j
+        print("num_colors: ", n_colors_t)
         cn_exists_t = 1 if n_colors_t <= c else 0
         VC_t = np.ones( (n,n_colors_t) )
         #Generate colors embeddings
