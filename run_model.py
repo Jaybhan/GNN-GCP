@@ -76,7 +76,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
     #open up the batch, which contains 2 instances
     for i in range(n_problems):
       n, m, c = n_vertices[i], n_edges[i], n_colors[i]
-      c = chrom_number[i]
+      c = chrom_number
       conn = m / n
       n_acc = sum(n_vertices[0:i])
       c_acc = sum(n_colors[0:i])
