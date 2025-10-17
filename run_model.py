@@ -17,7 +17,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verbose=True):
 
-    M, C, VC, cn_exists, n_vertices, n_edges, f = batch
+    M, C, VC, cn_exists, n_vertices, n_edges, f, chrom_number_label = batch
+    print("chrom_number label: ", chrom_number_label)
     #Generate colors embeddings
     ncolors = np.sum(C)
     #We define the colors embeddings outside, randomly. They are not learnt by the GNN (that can be improved)
@@ -27,6 +28,7 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
     feed_dict = {
         model['M']: M,
         model['VC']: VC,
+        #how many colors we are testing
         model['chrom_number']: C,
         model['time_steps']: time_steps,
         model['cn_exists']: cn_exists,
@@ -76,7 +78,6 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
     #open up the batch, which contains 2 instances
     for i in range(n_problems):
       n, m, c = n_vertices[i], n_edges[i], n_colors[i]
-      c = chrom_number
       conn = m / n
       n_acc = sum(n_vertices[0:i])
       c_acc = sum(n_colors[0:i])
@@ -90,7 +91,6 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
       for j in range(2, c + 5):
         n_colors_t = j
         #print("num_colors: ", n_colors_t)
-        print("chrom_number: ", c)
         cn_exists_t = 1 if n_colors_t <= c else 0
         VC_t = np.ones( (n,n_colors_t) )
         #Generate colors embeddings
@@ -250,7 +250,7 @@ if __name__ == '__main__':
                   summarize_epoch(epoch_i,train_stats['loss'],train_stats['acc'],train_stats['sat'],train_stats['pred'],train=True)
 
                   # Save weights
-                  savepath = ptrain+'/checkpoints/epoch={epoch}'.format(epoch=round(1*np.ceil((epoch_i+1)/1)))
+                  savepath = ptrain+'/checkpoints/epoch={epoch}'.format(epoch=round(20*np.ceil((epoch_i+1)/20)))
                   os.makedirs(savepath, exist_ok=True)
                   if save_checkpoints: save_weights(sess, savepath);
 

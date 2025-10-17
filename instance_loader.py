@@ -38,6 +38,7 @@ class InstanceLoader(object):
                     break
 
                 cn_exists_val = 1 if colors <= chrom_number else 0
+                print("chrom_number exists??: ", cn_exists_val, chrom_number)
                 yield Ma, colors, f, cn_exists_val, chrom_number
                 instances_generated += 1
 
@@ -52,6 +53,7 @@ class InstanceLoader(object):
 
         # n_instances: number of instances
         n_instances = len(instances)
+        print(n_instances)
 
         # n_vertices[i]: number of vertices in the i-th instance
         n_vertices  = np.array([ x[0].shape[0] for x in instances ])
@@ -94,11 +96,13 @@ class InstanceLoader(object):
                 #end if
             #end for
         #end for
-        print("batch", M, n_colors, MC, cn_exists, n_vertices, n_edges, f)
+        #print("batch", M, n_colors, MC, cn_exists, n_vertices, n_edges, f)
         return M, n_colors, MC, cn_exists, n_vertices, n_edges, f, chrom_number
     #end
 
     def get_batches(self, batch_size):
+        print("batch_size: ", batch_size)
+        print("len(self.filenames): ", len(self.filenames))
         for i in range( len(self.filenames) // batch_size ):
             instances = list(self.get_instances(batch_size))
             yield InstanceLoader.create_batch(instances)
