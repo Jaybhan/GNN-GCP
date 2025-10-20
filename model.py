@@ -9,16 +9,16 @@ def build_network(d):
 
     # Define hyperparameters
     d = d
-    learning_rate = 2e-5
+    learning_rate = 1e-3
     l2norm_scaling = 1e-10
-    global_norm_gradient_clipping_ratio = 0.65
+    global_norm_gradient_clipping_ratio = 5
 
     # Placeholder for answers to the decision problems (one per problem)
     cn_exists = tf.placeholder( tf.float32, shape = (None,), name = 'cn_exists' )
     # Placeholders for the list of number of vertices and edges per instance
     n_vertices  = tf.placeholder( tf.int32, shape = (None,), name = 'n_vertices')
     n_edges     = tf.placeholder( tf.int32, shape = (None,), name = 'n_edges')
-    # Placeholder for the adjacency matrix connecting each vertex to its neighbors 
+    # Placeholder for the adjacency matrix connecting each vertex to its neighbors
     M_matrix   = tf.placeholder( tf.float32, shape = (None,None), name = "M" )
     # Placeholder for the adjacency matrix connecting each vertex to its candidate colors
     VC_matrix = tf.placeholder( tf.float32, shape = (None,None), name = "VC" )
@@ -28,8 +28,8 @@ def build_network(d):
     time_steps  = tf.placeholder( tf.int32, shape = (), name = "time_steps" )
     #Placeholder for initial color embeddings for the given batch
     colors_initial_embeddings = tf.placeholder( tf.float32, shape=(None,d), name= "colors_initial_embeddings")
-    
-    
+
+
     # All vertex embeddings are initialized with the same value, which is a trained parameter learned by the network
     total_n = tf.shape(M_matrix)[1]
     v_init = tf.get_variable(initializer=tf.random_normal((1,d)), dtype=tf.float32, name='V_init')
@@ -37,9 +37,9 @@ def build_network(d):
         tf.div(v_init, tf.sqrt(tf.cast(d, tf.float32))),
         [total_n, 1]
     )
-    
-    
-    
+
+
+
     # Define GNN dictionary
     GNN = {}
 
@@ -110,7 +110,7 @@ def build_network(d):
         kernel_initializer = tf.contrib.layers.xavier_initializer(),
         bias_initializer = tf.zeros_initializer()
         )
-    
+
     # Get the last embeddings
     last_states = gnn(
       { "M": M_matrix, "VC": VC_matrix, 'chrom_number': chrom_number },
@@ -120,8 +120,8 @@ def build_network(d):
     GNN["last_states"] = last_states
     V_n = last_states['V'].h
     C_n = last_states['C'].h
-    
-    
+
+
     # Compute a vote for each embedding
     V_vote = tf.reshape(V_vote_MLP(V_n), [-1])
 
@@ -163,9 +163,9 @@ def build_network(d):
     # Define gradients and train step
     grads, _ = tf.clip_by_global_norm(tf.gradients(GNN['loss'] + tf.multiply(vars_cost, l2norm_scaling),tf.trainable_variables()),global_norm_gradient_clipping_ratio)
     GNN['train_step'] = optimizer.apply_gradients(zip(grads, tf.trainable_variables()))
-    
+
     GNN['C_n'] = C_n
-    
+
     # Return GNN dictionary
     return GNN
 #end
