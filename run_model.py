@@ -15,7 +15,7 @@ from tabucol import tabucol, test
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-COLOR_EMB = {}         
+COLOR_EMB = {}
 _rng = np.random.RandomState(0)
 
 def get_color_embeddings(k, d):
@@ -259,9 +259,12 @@ if __name__ == '__main__':
                   summarize_epoch(epoch_i,train_stats['loss'],train_stats['acc'],train_stats['sat'],train_stats['pred'],train=True)
 
                   # Save weights
-                  savepath = ptrain+'/checkpoints/epoch={epoch}'.format(epoch=round(20*np.ceil((epoch_i+1)/20)))
-                  os.makedirs(savepath, exist_ok=True)
-                  if save_checkpoints: save_weights(sess, savepath);
+                  if epoch_i % 50 == 0:
+                    savepath = ptrain+'/checkpoints/epoch={epoch}'.format(epoch=epoch_i)
+                    os.makedirs(savepath, exist_ok=True)
+                    if save_checkpoints:
+                        save_weights(sess, savepath)
+                  #end if
 
                   logfile.write('{epoch_i} {trloss} {tracc} {trsat} {trpred} {trTP} {trFP} {trTN} {trFN} \n'.format(
 
