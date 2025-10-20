@@ -2,7 +2,7 @@ import os, sys
 import random
 import numpy as np
 from functools import reduce
-print("howdy")
+print("hi")
 class InstanceLoader(object):
 
     def __init__(self,path):
