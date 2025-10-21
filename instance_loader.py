@@ -2,7 +2,7 @@ import os, sys
 import random
 import numpy as np
 from functools import reduce
-print("hi")
+print("hello")
 class InstanceLoader(object):
 
     def __init__(self,path):
@@ -190,4 +190,3 @@ def read_graph(filepath):
     #end
     return Ma,chrom_number,diff_edge
 #end
-#hello

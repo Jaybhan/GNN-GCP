@@ -16,13 +16,12 @@ from tabucol import tabucol, test
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 COLOR_EMB = {}
-_rng = np.random.RandomState(0)
 
 def get_color_embeddings(k, d):
     """Return the same (k , d) matrix every time k is requested."""
-    if k not in COLOR_EMB:
-        COLOR_EMB[k] = _rng.rand(k, d)
-    return COLOR_EMB[k]
+    rng = np.random.RandomState(k)      # seed **only** by k
+    return rng.rand(k, d)
+
 
 def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verbose=True):
 
