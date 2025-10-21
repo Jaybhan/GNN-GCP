@@ -15,14 +15,6 @@ from tabucol import tabucol, test
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-COLOR_EMB = {}
-
-def get_color_embeddings(k, d):
-    """Return the same (k , d) matrix every time k is requested."""
-    rng = np.random.RandomState(k)      # seed **only** by k
-    return rng.rand(k, d)
-
-
 def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verbose=True):
 
     M, C, VC, cn_exists, n_vertices, n_edges, f, chrom_number_label = batch
@@ -30,7 +22,7 @@ def run_training_batch(sess, model, batch, batch_i, epoch_i, time_steps, d, verb
     #Generate colors embeddings
     ncolors = np.sum(C)
     #We define the colors embeddings outside, randomly. They are not learnt by the GNN (that can be improved)
-    colors_initial_embeddings = get_color_embeddings(ncolors,d)
+    colors_initial_embeddings = np.random.rand(ncolors,d)
 
     # Define feed dict
     feed_dict = {
@@ -86,6 +78,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
     #open up the batch, which contains 2 instances
     for i in range(n_problems):
       n, m, c = n_vertices[i], n_edges[i], n_colors[i]
+      c= chrom_number[i]
       conn = m / n
       n_acc = sum(n_vertices[0:i])
       c_acc = sum(n_colors[0:i])
@@ -102,7 +95,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         cn_exists_t = 1 if n_colors_t <= c else 0
         VC_t = np.ones( (n,n_colors_t) )
         #Generate colors embeddings
-        colors_initial_embeddings = get_color_embeddings(n_colors_t,d)
+        colors_initial_embeddings = np.random.rand(n_colors_t,d)
 
         feed_dict = {
             model['M']: M_t,

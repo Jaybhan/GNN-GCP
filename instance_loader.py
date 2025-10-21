@@ -59,10 +59,13 @@ class InstanceLoader(object):
         n_vertices  = np.array([ x[0].shape[0] for x in instances ])
         # n_edges[i]: number of edges in the i-th instance
         n_edges     = np.array([ len(np.nonzero(x[0])[0]) for x in instances ])
-        # n_colors[i]: number of colors in the i-th instance
+        # n_colors[i]: number of colors being tested in the i-th instance
         n_colors = np.array( [x[1] for x in instances])
-        # cn_exists[i]: colorability target for the i-th instance
+        # cn_exists[i]: colorability target for the i-th instance (0/1)
         cn_exists = np.array( [x[3] for x in instances])
+        # chrom_number[i]: chromatic number of the i-th instance
+        chrom_number = np.array( [x[4] for x in instances])
+
         # total_vertices: total number of vertices among all instances
         total_vertices  = sum(n_vertices)
         # total_edges: total number of edges among all instances
