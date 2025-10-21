@@ -79,7 +79,7 @@ class InstanceLoader(object):
         # MC is a matrix connecting each problem nodes to its colors candidates
         MC = np.zeros((total_vertices, total_colors))
 
-        for (i,(Ma,colors,f,cn_exists_val,chrom_number)) in enumerate(instances):
+        for (i,(Ma,colors,f,cn_exists_val,chrom_number_unused)) in enumerate(instances):
             # Get the number of vertices (n) and edges (m) in this graph
             n, m, c = n_vertices[i], n_edges[i], n_colors[i]
             # Get the number of vertices (n_acc) and edges (m_acc) up until the i-th graph
