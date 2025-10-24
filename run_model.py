@@ -293,7 +293,7 @@ if __name__ == '__main__':
             print('Testing model v2...', flush=True)
             acc_ls=[]
             tot=0
-            for (batch_i, batch) in enumerate(test_loader.get_test_batches(1,80)):
+            for (batch_i, batch) in enumerate(test_loader.get_test_batches(1,4000)):
                 tot+=1
                 run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile, runtabu, acc_ls)
             #end
