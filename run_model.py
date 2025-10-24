@@ -77,7 +77,6 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
 
     #open up the batch, which contains 2 instances
     print("n_problems: ", n_problems)
-    return
     for i in range(n_problems):
       n, m, c = n_vertices[i], n_edges[i], n_colors[i]
       c= chrom_number[i]
@@ -293,11 +292,13 @@ if __name__ == '__main__':
             logfile.write('batch instance vertices edges connectivity loss acc sat chrom_number gnnpred gnncertainty gnntime tabupred tabutime\n')
             print('Testing model v2...', flush=True)
             acc_ls=[]
+            tot=0
             for (batch_i, batch) in enumerate(test_loader.get_test_batches(1,80)):
-
+                tot+=1
                 run_test_batch(sess, GNN, batch, batch_i, time_steps, logfile, runtabu, acc_ls)
             #end
             print("The accuracy is: ", np.mean(acc_ls))
+            print("The total is: ", tot)
             logfile.flush()
 
     #end
