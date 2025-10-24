@@ -113,6 +113,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         # Run model - chromatic number or more
         init_time = timeit.default_timer()
         loss, acc, predictions, TP, FP, TN, FN = sess.run(outputs, feed_dict = feed_dict)[-7:]
+        print("THE ACC IS: ", acc)
         elapsed_gnn_time  = timeit.default_timer() - init_time
         acc_ls.append(acc)
         # Debug print for test predictions
