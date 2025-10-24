@@ -77,6 +77,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
 
     #open up the batch, which contains 2 instances
     print("n_problems: ", n_problems)
+    return
     for i in range(n_problems):
       n, m, c = n_vertices[i], n_edges[i], n_colors[i]
       c= chrom_number[i]
