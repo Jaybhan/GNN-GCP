@@ -89,6 +89,7 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
       #c = c if i % 2 == 0 else c + 1
 
       gnnpred = tabupred = 999
+      accuracy_bool=1.0
       for j in range(2, c + 5):
         n_colors_t = j
         #print("num_colors: ", n_colors_t)
@@ -115,7 +116,8 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
         loss, acc, predictions, TP, FP, TN, FN = sess.run(outputs, feed_dict = feed_dict)[-7:]
         print("THE ACC IS: ", acc)
         elapsed_gnn_time  = timeit.default_timer() - init_time
-        acc_ls.append(acc)
+        if acc!=1.0:
+            accuracy_bool=0
         # Debug print for test predictions
         print("DEBUG TEST: Instance {}, chromatic_number={}, testing_colors={}, true_label={}, prediction={:.4f}, rounded={}".format(
             i, c, n_colors_t, cn_exists_t, predictions[0], int(np.round(predictions[0]))))
@@ -130,6 +132,10 @@ def run_test_batch(sess, model, batch, batch_i, time_steps, logfile, runtabu=Tru
           tabu_sol = 0 if tabu_solution is None else 1
           tabupred = n_colors_t if tabu_sol == 1 and n_colors_t < tabupred else tabupred
       #end for
+      if accuracy_bool==1.0:
+        acc_ls.append(1)
+      else:
+        acc_ls.append(0)
       logfile.write('{batch_i} {i} {n} {m} {conn} {tstloss} {tstacc} {cn_exists} {c} {gnnpred} {prediction} {gnntime} {tabupred} {tabutime}\n'.format(
         batch_i = batch_i,
         i = i,
