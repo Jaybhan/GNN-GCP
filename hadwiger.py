@@ -7,7 +7,6 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
-import matplotlib.pyplot as plt
 
 def generate_graph_max_indep_set_2(n):
     G = nx.Graph()
@@ -23,9 +22,17 @@ def generate_graph_max_indep_set_2(n):
 
     return G
 
-G = generate_graph_max_indep_set_2(8)
-print(nx.to_numpy_array(G, dtype=int))
-nx.draw(G, with_labels=True, node_color='lightblue', edge_color='black')
+def generate_random_graph(n):
+    G = nx.Graph()
+    G.add_nodes_from(range(n))
+
+    for u, v in itertools.combinations(G.nodes, 2):
+        if random.random()<0.5:
+            G.add_edge(u,v)
+
+    return G
+
+
 
 
 def adjacency_matrix_to_graph(adj_matrix):
@@ -67,7 +74,6 @@ def all_partitions(collection, k):
         for i in range(len(partition)):
             yield partition[:i] + [partition[i] + [first]] + partition[i + 1:]
 
-
 def has_k_minor(G, k):
     nodes = list(G.nodes)
     # try every subset of vertices with at least k elements
@@ -90,6 +96,9 @@ def hadwiger_number(adj_matrix):
 
 
 
+##FEEL FREE TO IGNOR EVERYTHING BELOW THIS LINE
+
+"""
 
 
 print(hadwiger_number(nx.to_numpy_array(G, dtype=int)))
@@ -135,3 +144,4 @@ for name in graph_names:  # remove [:10] to run all (might be slow!)
             break
     except:
         pass
+"""

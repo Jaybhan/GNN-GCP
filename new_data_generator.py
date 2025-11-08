@@ -2,12 +2,14 @@ from wolframclient.evaluation import WolframLanguageSession
 from wolframclient.language import wl, wlexpr
 import numpy as np
 import os
+from hadwiger import hadwiger_number, generate_graph_max_indep_set_2, generate_random_graph
+import networkx as nx
 
 # Start Wolfram Language session
 session = WolframLanguageSession()
 
 # Directory to save .graph files
-output_dir = "hadwiger_data"
+output_dir = "hadwiger_random_graph_n=12_train"
 os.makedirs(output_dir, exist_ok=True)
 
 # Get all graphs with Hadwiger number defined
@@ -46,7 +48,7 @@ def write_graph_file(name, adj_matrix, hadwiger_number, out_path):
         f.write(f"{hadwiger_number}\n")
 
         f.write("EOF\n")
-
+"""
 for name in graph_names:
     try:
         hadwiger = session.evaluate(wl.GraphData(name, "HadwigerNumber"))
@@ -69,3 +71,26 @@ for name in graph_names:
 # Done
 session.terminate()
 print("\n✅ All .graph files written to:", output_dir)
+"""
+
+def main():
+    count=0
+    while True:
+        G=generate_random_graph(12)
+        G=nx.to_numpy_array(G, dtype=int)
+        print(G)
+        had=hadwiger_number(G)
+        print(count)
+        if had<100:
+
+            file_name = f"graph_{count}"
+            out_path = os.path.join(output_dir, file_name)
+
+            write_graph_file("graph_{i}", G, had, out_path)
+            count+=1
+        if count==75:
+            print("Reached 75 graphs")
+            break
+
+if __name__ == "__main__":
+    main()
