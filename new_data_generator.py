@@ -1,6 +1,8 @@
 from wolframclient.evaluation import WolframLanguageSession
 from wolframclient.language import wl, wlexpr
+from multiprocessing import Pool, cpu_count
 import numpy as np
+from itertools import repeat
 import os
 from hadwiger import hadwiger_number, generate_graph_max_indep_set_2, generate_random_graph
 import networkx as nx
@@ -73,24 +75,50 @@ session.terminate()
 print("\n✅ All .graph files written to:", output_dir)
 """
 
-def main():
-    count=0
-    while True:
-        G=generate_random_graph(12)
-        G=nx.to_numpy_array(G, dtype=int)
-        print(G)
-        had=hadwiger_number(G)
-        print(count)
-        if had<100:
+def _sample_one(n):
+    G = generate_random_graph(n)
+    A = nx.to_numpy_array(G, dtype=int)
+    had = hadwiger_number(A)
+    return (had, A) if had < 100 else None
 
-            file_name = f"graph_{count}"
+# def main():
+#     count=0
+#     while True:
+#         G=generate_random_graph(12)
+#         G=nx.to_numpy_array(G, dtype=int)
+#         print(G)
+#         had=hadwiger_number(G)
+#         print(count)
+#         if had<100:
+
+#             file_name = f"graph_{count}"
+#             out_path = os.path.join(output_dir, file_name)
+
+#             write_graph_file("graph_{i}", G, had, out_path)
+#             count+=1
+#         if count==75:
+#             print("Reached 75 graphs")
+#             break
+
+def main(target=75, n=5, workers=None):
+    if workers is None:
+        # workers = max(1, cpu_count() - 5)
+        workers = 2
+    count = 0
+
+    with Pool(processes=workers) as pool:
+        for res in pool.imap_unordered(_sample_one, repeat(n), chunksize=workers * 2):
+            if res is None:
+                continue
+            had, A = res
+            file_name = f"graph_{count}.graph"
             out_path = os.path.join(output_dir, file_name)
-
-            write_graph_file("graph_{i}", G, had, out_path)
-            count+=1
-        if count==75:
-            print("Reached 75 graphs")
-            break
+            write_graph_file(file_name, A, had, out_path)
+            count += 1
+            if count >= target:
+                break
+            if count % 10 == 0:
+                print(f"Progress: {count}/{target}")
 
 if __name__ == "__main__":
     main()
