@@ -1,4 +1,5 @@
 import itertools
+from typing import Any
 import networkx as nx
 from wolframclient.language import wl          # Wolfram symbolic constructors
 from wolframclient.evaluation import WolframLanguageSession
@@ -31,6 +32,10 @@ def generate_random_graph(n):
             G.add_edge(u,v)
 
     return G
+
+
+
+
 
 
 
@@ -82,17 +87,17 @@ def has_k_minor(G, k):
             sub_nodes = list(subset)
             for partition in all_partitions(sub_nodes, k):
                 if all(is_connected_subgraph(G, part) for part in partition) and is_complete_between(G, partition):
-                    print(partition)
-                    return True
-    return False
+                    return True, [list(group) for group in partition]
+    return False, []
 
 
 def hadwiger_number(adj_matrix):
     G = adjacency_matrix_to_graph(adj_matrix)
     for k in range(G.number_of_nodes(), 0, -1):
-        if has_k_minor(G, k):
-            return k
-    return 1
+        found, partition = has_k_minor(G, k)
+        if found:
+            return k, partition
+    return 1, []
 
 
 
