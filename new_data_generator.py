@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 #session = WolframLanguageSession()
 
-output_dir = "hadwiger_random_graph_n=12_train"
+output_dir = "hadwiger_random_graph_augmented_train"
 os.makedirs(output_dir, exist_ok=True)
 
 """
@@ -95,7 +95,8 @@ def increase_had_by_1(G, had, partition):
 def main():
     count=0
     while True:
-        G=generate_random_graph(6)
+        G=generate_random_graph(11)
+        print(count)
         G_adj=nx.to_numpy_array(G, dtype=int)
         had, partition=hadwiger_number(G_adj)
         if had==1:
@@ -111,6 +112,7 @@ def main():
             if func=="increase_had":
                 G, partition = increase_had_by_1(G, had, partition)
                 had+=1
+        """
         print(len(G.nodes))
         if len(G.nodes)<=11:
             test_had, test_had_nodes=hadwiger_number(nx.to_numpy_array(G, dtype=int))
@@ -120,17 +122,18 @@ def main():
         else:
             print("too big")
             continue
+        """
 
         print(f"Test case {count} successful!")
 
-        #file_name = f"graph_{count}"
-        #out_path = os.path.join(output_dir, file_name)
-        #write_graph_file("graph_{i}", G_adj, had, out_path)
+        file_name = f"graph_{count}"
+        out_path = os.path.join(output_dir, file_name)
+        write_graph_file("graph_{i}", G_adj, had, out_path)
         count+=1
 
 
-        if count==100:
-            print("Reached 100 graphs")
+        if count==1000:
+            print("Reached 1000 graphs")
             break
 
 if __name__ == "__main__":
