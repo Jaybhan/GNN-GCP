@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 #session = WolframLanguageSession()
 
-output_dir = "hadwiger_random_graph_augmented_train"
+output_dir = "hadwiger_random_graph_augmented_test"
 os.makedirs(output_dir, exist_ok=True)
 
 """
@@ -104,7 +104,6 @@ def main():
 
         for i in range(random.randint(1, 10)):
             func=random.choice(["split_edge", "add_nodes", "increase_had"])
-            print(func)
             if func=="split_edge":
                 G, partition = split_edge(G, partition)
             if func=="add_nodes":
@@ -124,7 +123,6 @@ def main():
             continue
         """
 
-        print(f"Test case {count} successful!")
 
         file_name = f"graph_{count}"
         out_path = os.path.join(output_dir, file_name)
@@ -132,8 +130,8 @@ def main():
         count+=1
 
 
-        if count==1000:
-            print("Reached 1000 graphs")
+        if count==100:
+            print("Reached 100 graphs")
             break
 
 if __name__ == "__main__":

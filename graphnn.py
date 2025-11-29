@@ -8,7 +8,7 @@ class GraphNN(object):
     mat,
     msg,
     loop,
-    MLP_depth = 6,
+    MLP_depth = 3,
     MLP_weight_initializer = tf.contrib.layers.xavier_initializer,
     MLP_bias_initializer = tf.zeros_initializer,
     RNN_cell = tf.contrib.rnn.LayerNormBasicLSTMCell,
