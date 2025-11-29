@@ -8,7 +8,7 @@ class GraphNN(object):
     mat,
     msg,
     loop,
-    MLP_depth = 3,
+    MLP_depth = 6,
     MLP_weight_initializer = tf.contrib.layers.xavier_initializer,
     MLP_bias_initializer = tf.zeros_initializer,
     RNN_cell = tf.contrib.rnn.LayerNormBasicLSTMCell,
@@ -22,13 +22,13 @@ class GraphNN(object):
     Receives three dictionaries: var, mat and msg.
     ○ var is a dictionary from variable names to embedding sizes.
       That is: an entry var["V1"] = 10 means that the variable "V1" will have an embedding size of 10.
-    
+
     ○ mat is a dictionary from matrix names to variable pairs.
       That is: an entry mat["M"] = ("V1","V2") means that the matrix "M" can be used to mask messages from "V1" to "V2".
-    
+
     ○ msg is a dictionary from function names to variable pairs.
       That is: an entry msg["cast"] = ("V1","V2") means that one can apply "cast" to convert messages from "V1" to "V2".
-    
+
     ○ loop is a dictionary from variable names to lists of dictionaries:
       {
         "mat": the matrix name which will be used,
@@ -42,7 +42,7 @@ class GraphNN(object):
       if "fun" is None, no function will be applied,
       If "msg" is false, no message conversion function will be applied,
       If "var" is false, then [1] will be supplied as a surrogate.
-      
+
       That is: an entry loop["V2"] = [ {"mat":None,"fun":f,"var":"V2"}, {"mat":"M","transpose?":true,"msg":"cast","var":"V1"} ] enforces the following update rule for every timestep:
         V2 ← tf.append( [ f(V2), Mᵀ × cast(V1) ] )
     """
@@ -54,12 +54,12 @@ class GraphNN(object):
     self.RNN_cell = RNN_cell
     self.Cell_activation = Cell_activation
     self.Msg_activation = Msg_activation
-    self.Msg_last_activation  = Msg_last_activation 
+    self.Msg_last_activation  = Msg_last_activation
     self.float_dtype = float_dtype
-    
+
     # Check model for inconsistencies
     self.check_model()
-    
+
     # Initialize the parameters
     with tf.variable_scope(self.name):
       with tf.variable_scope('parameters'):
@@ -136,7 +136,7 @@ class GraphNN(object):
           c0 = tf.zeros_like(h0, dtype=self.float_dtype) if v not in LSTM_initial_states else LSTM_initial_states[v]
           states[v] = tf.contrib.rnn.LSTMStateTuple(h=h0, c=c0)
         #end
-        
+
         # Build while loop body function
         def while_body( t, states ):
           new_states = {}
@@ -170,7 +170,7 @@ class GraphNN(object):
           #end for v in var
           return (t+1), new_states
         #end while_body
-        
+
         _, last_states = tf.while_loop(
           lambda t, states: tf.less( t, time_steps ),
           while_body,
@@ -212,7 +212,7 @@ class GraphNN(object):
             )
           )
         )
-          
+
         assertions.append(
           tf.assert_equal(
             lstm_init_shape,
