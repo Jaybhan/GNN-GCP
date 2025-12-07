@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 #session = WolframLanguageSession()
 
-output_dir = "hadwiger_random_graph_augmented_test"
+output_dir = "hadwiger_random_graph_augmented_train"
 os.makedirs(output_dir, exist_ok=True)
 
 """
@@ -123,15 +123,15 @@ def main():
             continue
         """
 
-
+        G_adj=nx.to_numpy_array(G, dtype=int)
         file_name = f"graph_{count}"
         out_path = os.path.join(output_dir, file_name)
-        write_graph_file("graph_{i}", G_adj, had, out_path)
+        write_graph_file("graph_{count}", G_adj, had, out_path)
         count+=1
 
 
-        if count==100:
-            print("Reached 100 graphs")
+        if count==1000:
+            print("Reached 1000 graphs")
             break
 
 if __name__ == "__main__":
