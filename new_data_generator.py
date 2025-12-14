@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 #session = WolframLanguageSession()
 
-output_dir = "hadwiger_random_graph_augmented_train"
+output_dir = "hadwiger_random_graph_augmented_train_20000"
 os.makedirs(output_dir, exist_ok=True)
 
 """
@@ -93,7 +93,7 @@ def increase_had_by_1(G, had, partition):
 
 
 def main():
-    count=0
+    count=6084
     while True:
         G=generate_random_graph(11)
         print(count)
@@ -130,8 +130,8 @@ def main():
         count+=1
 
 
-        if count==1000:
-            print("Reached 1000 graphs")
+        if count==20000:
+            print("Reached 20000 graphs")
             break
 
 if __name__ == "__main__":
